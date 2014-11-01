@@ -1,3 +1,5 @@
+English version is below.
+
 Arch C言語 課題No.1 catコマンドの実装
 =====
 
@@ -12,3 +14,21 @@ Unix系OSに標準で同梱されている`cat`コマンドと同等の働きを
 
 * 上記の条件を確かに満たしているか
 * OS同梱の`cat`コマンドの結果と`diff`して同じになっているか
+
+
+--
+
+Arch Subject#1 Implement cat command
+=====
+
+### Details
+
+Implement an application same behave as the `cat` command using C.
+
+- Do not include `stdio.h` or `stdlib.h`.
+- Do not need to implement same behave as the `cat` command options.
+
+### Evaluations
+
+- Meet the above requirements.
+- Have the same results of original `cat` and made `cat` using `diff`.
