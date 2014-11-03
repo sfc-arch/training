@@ -1,42 +1,50 @@
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[])
+int rw(int fd)
 {
-	if (argc < 2)
-	{
-		write(2, "argument error\n", 16);
+	if (fd < 0) {
+		write(2, "open error\n", 11);
 		return -1;
 	}
 
-	int i, fd, rs;
+	int rs;
 	char buf[256];
 
-	for (i = 1; i < argc; i++)
-	{
-		fd = open(argv[i], O_RDONLY);
+	while (1) {
+		rs = read(fd, buf, 256);
 
-		if (fd < 0) {
-			write(2, "open error\n", 16);
+		if (rs < 0) {
+			write(2, "read error\n", 11);
 			return -1;
 		}
+		
+		if (rs == 0) break;
+		else write(1, buf, rs);
+	}
 
-		while (1) {
-			rs = read(fd, buf, sizeof(buf));
+	return 0;
+}
 
-			if (rs < 0) {
-				write(2, "read error\n", 16);
-				return -1;
+int main(int argc, char *argv[])
+{
+	int i, fd;
+
+	switch (argc) {
+		case 0:
+			write(2, "argument error\n", 15);
+			return -1;
+		case 1:
+			if (rw(0) != 0) return -1;
+			break;
+		default:
+			for (i = 1; i < argc; i++) {
+				fd = open(argv[i], O_RDONLY);
+				if (rw(fd) != 0) return -1;
+				close(fd);
 			}
-			
-			if (rs == 0) break;
-			else write(1, buf, rs);
-		}
-
-		close(fd);
 	}
 
 	return 0;
