@@ -1,4 +1,6 @@
-#include <io.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <unistd.h>
 #include <fcntl.h>
 
 int my_strlen(const char *str){
@@ -30,7 +32,7 @@ int main(int argc, char *argv[]){
 			if ((fd = open(argv[i], O_RDONLY)) == -1){
 				writestr("Error. No such file or directory.\n");
 			}else{
-					while((rc = read(fd,buf,1024)) > 0){
+					while((rc = read(fd, buf, 1024)) > 0){
 						write(1, buf, rc);
 					}
 					if(rc == -1)writestr("Error. File can not be read.\n");
