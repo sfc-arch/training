@@ -4,10 +4,10 @@
 #include <fcntl.h>
 
 int my_strlen(const char *str){
-	int i = 0; 
+	int l = 0; 
 
-	while(*str++) i++;
-	return(i);
+	while(*str++) l++;
+	return l;
 }
 
 int writestr(const char* str){
@@ -16,15 +16,14 @@ int writestr(const char* str){
 }
 
 int main(int argc, char *argv[]){
-	char *buf[1024];
+	char buf[1024];
 	int fd;
 	int rc;
-	int kc;
 	int count = 0;
 
 	if(argc == 1){
-		while((kc = read(0, buf, 512)) > 0){
-					write(1, buf, kc);
+		while((rc = read(0, buf, 1024)) > 0){
+			write(1, buf, rc);
 		}
 	}else{
 		int i;
@@ -32,11 +31,11 @@ int main(int argc, char *argv[]){
 			if ((fd = open(argv[i], O_RDONLY)) == -1){
 				writestr("Error. No such file or directory.\n");
 			}else{
-					while((rc = read(fd, buf, 1024)) > 0){
-						write(1, buf, rc);
-					}
-					if(rc == -1)writestr("Error. File can not be read.\n");
-					close(fd);
+				while((rc = read(fd, buf, 1024)) > 0){
+				write(1, buf, rc);
+				}
+				if(rc == -1)writestr("Error. File can not be read.\n");
+				close(fd);
 				}
 			}
 	}
