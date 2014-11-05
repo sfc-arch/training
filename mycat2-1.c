@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 				writestr("Error. No such file or directory.\n");
 			}else{
 				while((rc = read(fd, buf, 1024)) > 0){
-				write(1, buf, rc);
+					write(1, buf, rc);
 				}
 				if(rc == -1)writestr("Error. File can not be read.\n");
 				close(fd);
