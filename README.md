@@ -3,14 +3,18 @@ English version is below.
 Arch C言語 課題No.1 catコマンドの実装
 =====
 
-#### 課題内容
+### 目的
+
+システムコールの基本について学ぶ
+
+### 課題内容
 
 Unix系OSに標準で同梱されている`cat`コマンドと同等の働きをするアプリケーションを以下の条件のもとでC言語によって実装してください。
 
 * `stdio.h`および`stdlib.h`はインクルードしてはいけません
 * `cat`コマンドに実装されているオプションは実装しなくても構いません
 
-#### 評価内容
+### 評価内容
 
 * 上記の条件を確かに満たしているか
 * OS同梱の`cat`コマンドの結果と`diff`して同じになっているか
@@ -20,6 +24,10 @@ Unix系OSに標準で同梱されている`cat`コマンドと同等の働きを
 
 Arch Subject#1 Implement cat command
 =====
+
+### Intent
+
+To learn the basis of system calls
 
 ### Details
 
