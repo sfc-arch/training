@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "list.h"
 
-#define TEST_SIZE 5
+#define TEST_SIZE 1024
 
 int main(int argc, char const* argv[]) {
     List *queue;
