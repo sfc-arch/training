@@ -3,11 +3,11 @@
 
 int main(int argc, char *argv[]){
 	int fd, len, i;
-	char input;
+	int input;
 	char buf[512];
 	
 	if(argc == 1){
-		for(;input >= 0;){
+		while(input >= 0){
 			input = read(0, buf, 512);
 			write(1, buf, input);
 		}
@@ -25,7 +25,11 @@ int main(int argc, char *argv[]){
 			
 			if(len > 0){
 				write(1, buf, len);
-			}else{
+			}
+			if(len == 0){
+				break;
+			}
+			if(len < 0){
 				return -1;
 			}
 		}
