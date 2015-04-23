@@ -11,7 +11,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define PRINT(x) print(x, strlen(x), 1)
 #define ERROR(x) print(x, strlen(x), 2)
 
 #define BUFFER_SIZE 1024
@@ -23,7 +22,7 @@ void print(const char* str, size_t length, int fd) {
 int main(int argc, const char* argv[]) {
 
 	if (argc < 1) {
-		PRINT("Invalid invocation");
+		ERROR("Invalid invocation");
 		return -1;
 	}
 
@@ -46,7 +45,7 @@ int main(int argc, const char* argv[]) {
 		}
 
 		buffer[rc] = '\0';
-		PRINT(buffer);
+		print(buffer, rc, 1);
 	}
 
 	return 0;
