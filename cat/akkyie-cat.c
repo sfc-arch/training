@@ -9,15 +9,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define PRINT(x) print(x, strlen(x), 1)
 #define ERROR(x) print(x, strlen(x), 2)
 
 #define BUFFER_SIZE 1024
-
-typedef char bool;
-bool true = 1;
-bool false = 0;
 
 void print(const char* str, size_t length, int fd) {
 	write(fd, str, length);
