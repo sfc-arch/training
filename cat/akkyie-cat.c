@@ -22,7 +22,7 @@ void print(const char* str, size_t length, int fd) {
 int main(int argc, const char* argv[]) {
 
 	if (argc < 1) {
-		ERROR("Invalid invocation");
+		ERROR("Invalid invocation\n");
 		return -1;
 	}
 
