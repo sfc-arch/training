@@ -15,7 +15,7 @@ int main(int argc, char const* argv[]) {
     }
 
     for(i = 0; i < TEST_SIZE; ++i) {
-        result = unshift(&queue, &popped);
+        result = shift(&queue, &popped);
         assert(result);
         assert(popped == i);
         result = pop(&stack, &popped);
@@ -23,7 +23,7 @@ int main(int argc, char const* argv[]) {
         assert(popped == TEST_SIZE - 1 - i);
     }
 
-    assert(!unshift(&queue, &popped));
+    assert(!shift(&queue, &popped));
     assert(!pop(&stack, &popped));
 
     delete(queue);
