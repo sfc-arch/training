@@ -26,6 +26,7 @@ int main(int argc, const char *argv[]) {
           write(1,str,length);
         }
       }
+      close(fd);
     }
   }
 
