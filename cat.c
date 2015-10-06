@@ -1,4 +1,4 @@
-nclude <fcntl.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
@@ -31,4 +31,3 @@ int main(int argc, const char *argv[]) {
 
   return 0;
 }
-
