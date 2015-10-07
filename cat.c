@@ -2,19 +2,20 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>
+#define BUFFER_SIZE 1024
 
 int main(int argc, const char *argv[]) {
   int input;
   int length;
   int fd;
-  char *str[1024];
+  char *str[BUFFER_SIZE];
 
   switch (argc) {
     case 0:
             write(2, "An error occured.\n", 18);
             return -1;
     case 1:
-            while ((input = read(0, str, 1024)) > 0) {
+            while ((input = read(0, str, BUFFER_SIZE)) > 0) {
               write(1, str, input);
             }
             return -1;
@@ -28,7 +29,7 @@ int main(int argc, const char *argv[]) {
               }
 
               if (fd >= 0 ) {
-                while ((length = read(fd,str,1024)) > 0) {
+                while ((length = read(fd,str,BUFFER_SIZE)) > 0) {
                   write(1,str,length);
                 }
               }
