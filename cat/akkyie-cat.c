@@ -15,7 +15,7 @@
 
 #define BUFFER_SIZE 1024
 
-void print(const char* str, size_t length, int fd) {
+static inline void print(const char* str, size_t length, int fd) {
 	write(fd, str, length);
 }
 
