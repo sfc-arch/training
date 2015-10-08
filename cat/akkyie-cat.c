@@ -46,7 +46,12 @@ int main(int argc, const char* argv[]) {
 
 		buffer[rc] = '\0';
 		print(buffer, rc, 1);
-	}
 
+		if (fd > 0) {
+			close(fd);
+		}
+	}
+	
 	return 0;
+
 }
