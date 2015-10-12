@@ -10,10 +10,10 @@ Thanks to
 #include <fcntl.h>
 #include <string.h>
 #include <regex.h>
-#include "cat_helper.h"
-#include "cat_consts.h"
+#include "u-dory/cat_helper.h"
+#include "u-dory/cat_consts.h"
 
-#include "cat_methods.c"
+#include "u-dorycat_methods.c"
 
 const int N = 1024;
 
