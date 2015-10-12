@@ -24,12 +24,13 @@ int main(int argc, char *argv[]) {
             main_function();
         } else {
             if( check_arguments( argv, argc, "^--version" ) > 0 ) {
-                show_paragraph( NuVersionSentences, sizeof( NuVersionSentences ) / sizeof( NuVersionSentences[0] ) );
+                show_paragraph( NuVersionSentences, sizeof( VersionSentences ) / sizeof( VersionSentences[0] ) );
                 //return(0);
             } else if( check_arguments( argv, argc, "^--help" ) > 0)  {
                 show_paragraph( HelpSentences, sizeof( HelpSentences ) / sizeof( HelpSentences[0] ) );
                 //return(0);
             } else {
+
                     // # todo:
                     // after the if statement above,
                     // delete things from the array.
