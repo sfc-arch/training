@@ -13,7 +13,7 @@ Thanks to
 #include "u-dory/cat_helper.h"
 #include "u-dory/cat_consts.h"
 
-#include "u-dorycat_methods.c"
+#include "u-dory/cat_methods.c"
 
 const int N = 1024;
 
