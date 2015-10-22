@@ -19,10 +19,36 @@ void puts( char *string ) {
 // gets_to
 // gets a String from std input, and inputs to str.
 // !! Always create a char * object before !!
-char *gets_to( char *str, int size ) {
+// Also, this method deletes the endline for you.
+// this method is not used for now(under development). Use gets_to2() instead.
+char *gets_to( char *str ) {
+  //char string[size];
+  char tmpstr[10] = "";
+  int result = read( STDIN_FILENO, tmpstr, sizeof( str ) ); // NOTE: The third argument includes the input's endline
+        // COMMENT...
+        // Afterall, sizeof(str) always passes "8"(size of char). How can I change this?
+        // I want this expression to pass the exact length of what-ever-input-string you give. (Which may not able in C)
+        // Another solution is to expressly pass the length of the *char[] to gets_to(), which I have comment-outed for now.
+        // It's not beautiful, but may be the right way. If you do that, the usage will be like this:
+        //    char ans[some-kind-of-memory];
+        //    int lengthOfInputCharWhichYouThinkAsMaximumForSure;
+        //    gets_to(ans, lengthOfInput...)
+  if( ( result == 0 ) | ( result == -1 ) ) {
+    //puts("\nInput canceled. Aborting.");
+    _exit(0);
+  }
+  int newlength = strlen( tmpstr )-1;
+  strncpy( str, tmpstr, newlength );
+  return str;
+}
+
+char *gets_to2( char *str, int size ) {
     memset( str , '\0' , strlen( str ) );
     char tmpstr[size];
     int result = read( STDIN_FILENO, tmpstr, size ); // NOTE: The third argument includes the input's endline
+        // COMMENT...
+        // Yeah yeah, in this version I did the thing I wrote in gets_to().
+        // Now I can easily handle large strings. ...but far beautiful
     if((result == 0) | (result == -1)) {
         //input canceled by Ctrl-D.
         return(0);

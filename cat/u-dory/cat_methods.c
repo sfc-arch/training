@@ -3,7 +3,7 @@ int main_function() {
     int N = 256;
     char std_in[N];
     while(1) {
-    if ( gets_to( std_in, N ) == 0) { break; }
+    if ( gets_to2( std_in, N ) == 0) { break; }
         print( std_in );
         memset( std_in , '\0' , strlen( std_in ) );
     }
