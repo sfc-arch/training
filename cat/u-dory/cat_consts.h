@@ -4,7 +4,7 @@
 //
 
 // The original one
-const char *HelpSentencesOld[] = {
+const char *help_sentences_orig[] = {
     "使用法: cat [オプション]... [ファイル]...",
     "ファイル、または標準入力を連結し、標準出力に出力します。",
     "",
@@ -34,7 +34,7 @@ const char *HelpSentencesOld[] = {
     "or available locally via: info '(coreutils) cat invocation'"
 };
 
-const char *HelpSentences[] = {
+const char *help_sentences[] = {
     "使用法: cat [オプション]... [ファイル]...",
     "ファイル、または標準入力を連結し、標準出力に出力します。",
     "",
@@ -55,7 +55,7 @@ const char *HelpSentences[] = {
 };
 
 // The original one
-const char *VersionSentencesOld[] = {
+const char *version_sentences_orig[] = {
     "cat (GNU coreutils) 8.23",
     "Copyright (C) 2014 Free Software Foundation, Inc.",
     "ライセンス GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.",
@@ -65,7 +65,7 @@ const char *VersionSentencesOld[] = {
     "作者 Torbjörn Granlund および Richard M. Stallman。"
 };
 
-const char *VersionSentences[] = {
+const char *version_sentences[] = {
     "cat (imitation) 0.0.1",
     "Copyright (C) 2015 U-dory/Todoroki",
     "ライセンス :Distribution prohibited.",

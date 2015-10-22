@@ -24,10 +24,10 @@ int main( int argc, char *argv[] ) {
             main_function();
         } else {
             if( check_arguments( argv, argc, "^--version" ) > 0 ) {
-                show_paragraph( VersionSentences, sizeof( VersionSentences ) / sizeof( VersionSentences[0] ) );
+                show_paragraph( version_sentences, sizeof( version_sentences ) / sizeof( version_sentences[0] ) );
                 //return(0);
             } else if( check_arguments( argv, argc, "^--help" ) > 0)  {
-                show_paragraph( HelpSentences, sizeof( HelpSentences ) / sizeof( HelpSentences[0] ) );
+                show_paragraph( help_sentences, sizeof( help_sentences ) / sizeof( help_sentences[0] ) );
                 //return(0);
             } else {
                     // # todo:
