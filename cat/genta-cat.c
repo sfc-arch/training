@@ -3,29 +3,32 @@
 #include <errno.h>
 #include <string.h>
 
-int perror(int errnum){
+void print_error(int errnum){
 	write(2, strerror(errnum), 256);
 	write(1, "\n", 1);
-	return -1;
+}
+
+void print(int fd){
+	char buf[1024]; int rc;
+	while ((rc = read(fd, buf, 1024)))
+		write(1, buf, rc);
+	if (rc < 0)
+		print_error(errno);
 }
 
 int main(int argc, const char *argv[]) {
 	char buf[1024]; int rc, i, fd;
 
 	if (argc == 1 || (argc == 2 && *argv[1] == '-')) {
-		while ((rc = read(0, buf, 1024)))
-			write(1, buf, rc);
-		if (rc < 0)
-			return perror(errno);
+		print(0);
 	} else {
 		for (i = 1; i < argc; i++) {
-			if ((fd = open(argv[i], 0)) < 0)
-				return perror(errno);
-			while ((rc = read(fd, buf, 1024))) {
-				write(1, buf, rc);
+			if ((fd = open(argv[i], 0)) < 0) {
+				print_error(errno);
+				return 1;
 			}
-			if (rc < 0)
-				return perror(errno);
+			print(fd);
+			close(fd);
 		}
 	}
 	return 0;
