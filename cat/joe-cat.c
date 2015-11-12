@@ -1,4 +1,4 @@
-#include<unistd.h>/*open STDOUT_FILE§ §…§Œ•ﬁ•Ø•ÌƒÍµ¡ */
+#include<unistd.h>/*open STDOUT_FILE„Å™„Å©„ÅÆ„Éû„ÇØ„É≠ÂÆöÁæ© */
 #include<sys/types.h>
 #include<sys/uio.h>
 #include<fcntl.h>/*read */ /*write*/ /*close*/
@@ -10,18 +10,18 @@
 #define ERNUM 15
 
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[])
 {
     int fd;
     ssize_t cc;
     char buf[BUFFER_SIZE];
-    char notation[] = "Ω™Œª§µ§ª§ÎæÏπÁ§œ°¢control + D§Ú§™§∑§∆§Ø§¿§µ§§°£\n";
+    char notation[] = "ÁµÇ‰∫Ü„Åï„Åõ„ÇãÂ†¥Âêà„ÅØ„ÄÅcontrol + D„Çí„Åä„Åó„Å¶„Åè„Å†„Åï„ÅÑ„ÄÇ\n";
 
 
     if( argc == 1 )
     {
         write( STDOUT_FILENO, notation, sizeof(notation));
-        while( (cc = read (STDIN_FILENO, buf, sizeof(buf) ) ) > 0)
+        while( ( cc = read ( STDIN_FILENO, buf, sizeof(buf) ) ) > 0)
             {
                 if ( write( STDOUT_FILENO, buf, cc) == -1)
                 {
@@ -34,15 +34,15 @@ int main(int argc, char *argv[])
     }
 
     int i;
-    for(i = 1; i < argc; i++)
+    for( i = 1; i < argc; i++)
     {
-        if(( fd = open( argv[i], O_RDONLY)) == -1)
+        if( ( fd = open( argv[i], O_RDONLY) ) == -1)
         {
-            write(STDOUT_FILENO, ERNOTE, ERNUM);
+            write( STDOUT_FILENO, ERNOTE, ERNUM);
             return 1;
         }
 
-        while( ( cc = read(fd, buf, sizeof(buf) ) ) > 0)
+        while( ( cc = read( fd, buf, sizeof(buf) ) ) > 0)
         {
             if( (write( STDOUT_FILENO, buf, cc) ) == -1)
             {
