@@ -18,7 +18,7 @@ int main( int argc, char *argv[])
     char notation[] = "終了させる場合は、control + Dをおしてください。\n";
 
 
-    if( argc == 1 )
+    if( argc == 1)
     {
         write( STDOUT_FILENO, notation, sizeof(notation));
         while( ( cc = read ( STDIN_FILENO, buf, sizeof(buf) ) ) > 0)
