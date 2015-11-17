@@ -2,11 +2,9 @@
 #include <fcntl.h>
 
 int main(int argc, char *argv[]) {
-	
+
 	int fd, i, rf;
-	
 	char buf[256];
-	
 
 	for(i = 1; i < argc; i++){
 		fd = open(argv[i], O_RDONLY);
@@ -15,7 +13,7 @@ int main(int argc, char *argv[]) {
 			rf = read(fd, buf, 255);
 
 			write(2, buf, rf);
-		
+
 
 			if(rf == 0){
 				break;
@@ -23,11 +21,11 @@ int main(int argc, char *argv[]) {
 			else if(rf < 0){
 				return -1;
 			}
-	
+
 		}
-	close(fd);
+		close(fd);
 	}	
 
-	
-    return 0;
+
+	return 0;
 }
