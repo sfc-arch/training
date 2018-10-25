@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
-#include <stdio.h>
 
 const char crlf[2] = "\r\n";
 const char msg[7] = "supacat";
