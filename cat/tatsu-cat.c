@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
         if ((fd = open(argv[i], O_RDONLY)) < 0)
         {
             close(fd);
-            _exit(1);
+            continue;
         }
         while ((buflen = read(fd, buf, N)) > 0)
             write(1, buf, buflen);
