@@ -18,24 +18,24 @@ int main(int argc, char* argv[]) {
 		fdescript = open(argv[i], O_RDONLY);
 		if (fdescript == -1) {
 			err(argv[i],errno);
-		} else {
-			while(1) {
-				readbytes = read(fdescript,buff,256);
-				if (readbytes > 0) {
-					writebytes = write(1,buff,readbytes);
-					if (writebytes == -1) err(NULL,errno);
-				} else if (readbytes == 0) {
-					close(fdescript);
-					break;
-				} else {
-					int errornum = errno;
-					err(argv[i],errornum);
-					break;
-				}
+			continue;
+		}
+		while(1) {
+			readbytes = read(fdescript,buff,256);
+			if (readbytes > 0 && readbytes <= 256) {
+				writebytes = write(1,buff,readbytes);
+				if (writebytes == -1) err(NULL,errno);
+			} else if (readbytes == 0) {
+				close(fdescript);
+				writebytes = write(1,crlf,2);
+				if (writebytes == -1) err(NULL,errno);
+				break;
+			} else {
+				int errornum = errno;
+				err(argv[i],errornum);
+				break;
 			}
 		}
-		writebytes = write(1,crlf,2);
-		if (writebytes == -1) err(NULL,errno);
 	}
 	return errstate;
 }
@@ -48,5 +48,6 @@ void err(char* fname, int preverr) {
 		write(2,colon,2);
 	}
 	write(2,strerror(preverr),strlen(strerror(preverr)));
+	write(1,crlf,2);
 	errstate = 1;
 }
