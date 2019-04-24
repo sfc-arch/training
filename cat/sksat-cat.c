@@ -9,6 +9,7 @@
 #define stderr	2
 
 // funcs
+void* memset(void *buf, int ch, size_t n);
 size_t strlen(const char *str);
 void fputs(int fd, const char *str);
 void puts(const char *str);
@@ -32,6 +33,7 @@ int main(int argc, char **argv){
 		if(fd == -1)
 			error("cannot open file.\n");
 		cat_loop(fd);
+		close(fd);
 	}
 }
 
@@ -48,10 +50,18 @@ void cat_loop(int fd){
 
 void error(const char *msg){
 	puts(msg);
-	exit(-1);
+	_exit(-1);
 }
 
 // library funcs impl
+
+void* memset(void *buf, int ch, size_t n){
+	int i;
+	for(i=0;i<n;i++){
+		((char*)buf)[i] = ch;
+	}
+	return buf;
+}
 
 size_t strlen(const char *str){
 	size_t len;
