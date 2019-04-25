@@ -205,11 +205,8 @@ void print_with_opt(const char *buf){
 	const char *read = buf;
 	char *write = buf2;
 
-	if((output_opt & OPT_NUMBER) && line==1){
-		puts("    ");
-		puti(line++);
-		puts("  ");
-	}
+	if((output_opt & OPT_NUMBER) && line==1)
+		puts("    1  ");
 
 	for(;;){
 		if(*read == '\0'){
@@ -250,16 +247,19 @@ notopt:
 	}
 
 	if(output_opt & OPT_NUMBER){
-		for(;;){
-			if(*buf == '\0') break;
-			putchar(*buf);
-			if(*buf == '\n'){
-				puts("    ");
-				puti(line);
-				puts("  ");
-				line++;
+		if(line == 1) line++;
+		else{
+			for(;;){
+				if(*buf == '\0') break;
+				putchar(*buf);
+				if(*buf == '\n'){
+					puts("    ");
+					puti(line);
+					puts("  ");
+					line++;
+				}
+				buf++;
 			}
-			buf++;
 		}
 	}else
 		puts(buf2);
