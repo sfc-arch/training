@@ -1,5 +1,10 @@
-#include <unistd.h>
-#include <fcntl.h>
+// std types
+// 64bit
+#define __SIZE_TYPE__		long unsigned int
+typedef long			__kernel_ssize_t;
+
+typedef __SIZE_TYPE__		size_t;
+typedef __kernel_ssize_t	ssize_t;
 
 // my stdlib
 
@@ -23,10 +28,15 @@ int  sys_open(const char *fname, int flags, int mode);
 int  sys_close(unsigned int fd);
 void sys_exit(int status);
 
-// file descriptor
+// file
 #define stdin	0
 #define stdout	1
 #define stderr	2
+
+#define O_RDONLY	0x0000
+#define O_WRONLY	0x0001
+#define O_RDWR		0x0002
+#define O_ACCMODE	0x0003
 
 // funcs
 void* memset(void *buf, int ch, size_t n);
@@ -37,8 +47,18 @@ void puts(const char *str);
 
 #define BUF_SIZE	256
 
+int main(int argc, char **argv);
 void cat_loop(int fd);
 void error(const char *msg);
+
+// entry point
+asm(
+		".global _start;"
+		"_start:\n"
+		"	xorl %ebp, %ebp;"
+		"	movq 0(%rsp), %rdi;"
+		"	lea 8(%rsp), %rsi;"
+		"	call main");
 
 int main(int argc, char **argv){
 	char buf[BUF_SIZE];
@@ -64,7 +84,7 @@ void cat_loop(int fd){
 
 	for(;;){
 		memset(buf, '\0', BUF_SIZE);
-		if(sys_read(fd, buf, BUF_SIZE) == 0)
+		if(sys_read(fd, buf, BUF_SIZE-1) == 0)
 			break;
 		puts(buf);
 	}
