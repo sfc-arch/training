@@ -129,12 +129,18 @@ void check_option(const char *opt){
 		opt++;
 	}
 
-	if((h_num==1 && strcmp(opt, "T")==0) | (h_num==2 && strcmp(opt, "show-tabs")==0)){
+	if((h_num==1 && strcmp(opt, "E")==0) |
+			(h_num==2 && strcmp(opt, "show-ends")==0))
+		output_opt |= OPT_END;
+	else if((h_num==1 && strcmp(opt, "T")==0) |
+			(h_num==2 && strcmp(opt, "show-tabs")==0))
 		output_opt |= OPT_TAB;
-	}else if(h_num == 2 && strcmp(opt, "help") == 0){
+	else if(h_num == 2 && strcmp(opt, "help") == 0){
 		flg_exit = true;
 		puts("Usage: ./sksat-cat [OPTION]... [FILE]...\n"
-			"Concatenate FILE(s) to standard output.\n"
+			"Concatenate FILE(s) to standard output.\n\n"
+			"With no FILE, or when FILE is -, read standard input.\n\n"
+			"  -E, --show-ends          display $ at end of each line\n"
 			"  -T, --show-tabs          display TAB characters as ^I\n"
 			"    --help     display this help and exit\n"
 			"    --version  output version information and exit\n"
@@ -188,6 +194,13 @@ void print_with_opt(const char *buf){
 			break;
 		}
 		switch(*read){
+		case '\n':
+			if(output_opt & OPT_END){
+				*write    = '$';
+				*(write+1)= '\n';
+				write++;
+			}
+			break;
 		case '\t':
 			if(output_opt & OPT_TAB){
 				*write  = '^';
