@@ -3,6 +3,26 @@
 
 // my stdlib
 
+// system call
+
+#define TO_STRING(str)	#str
+#define STR(val) TO_STRING(val)
+
+#define NUM_READ	0
+#define NUM_WRITE	1
+#define NUM_OPEN	2
+#define NUM_CLOSE	3
+#define NUM_EXIT	60
+#define NUM_OPENAT	257
+
+#define AT_FDCWD	-100
+
+ssize_t sys_read(unsigned int fd, char *buf, size_t count);
+void sys_write(unsigned int fd, const char *buf, size_t count);
+int  sys_open(const char *fname, int flags, int mode);
+int  sys_close(unsigned int fd);
+void sys_exit(int status);
+
 // file descriptor
 #define stdin	0
 #define stdout	1
@@ -29,12 +49,14 @@ int main(int argc, char **argv){
 	}
 
 	for(int n=1;n<argc;n++){
-		int fd = open(argv[n], O_RDONLY);
+		int fd = sys_open(argv[n], O_RDONLY, 0);
 		if(fd == -1)
 			error("cannot open file.\n");
 		cat_loop(fd);
-		close(fd);
+		sys_close(fd);
 	}
+
+	sys_exit(0);
 }
 
 void cat_loop(int fd){
@@ -42,7 +64,7 @@ void cat_loop(int fd){
 
 	for(;;){
 		memset(buf, '\0', BUF_SIZE);
-		if(read(fd, buf, BUF_SIZE) == 0)
+		if(sys_read(fd, buf, BUF_SIZE) == 0)
 			break;
 		puts(buf);
 	}
@@ -50,7 +72,7 @@ void cat_loop(int fd){
 
 void error(const char *msg){
 	puts(msg);
-	_exit(-1);
+	sys_exit(-1);
 }
 
 // library funcs impl
@@ -73,10 +95,42 @@ size_t strlen(const char *str){
 }
 
 void fputs(int fd, const char *str){
-	write(fd, str, strlen(str));
+	sys_write(fd, str, strlen(str));
 	return;
 }
 
 void puts(const char *str){
 	fputs(stdout, str);
+}
+
+// system call wrapper impl
+
+ssize_t sys_read(unsigned int fd, char *buf, size_t count){
+	asm volatile (
+			"mov $" STR(NUM_READ) ", %rax;"
+			"syscall");
+}
+
+void sys_write(unsigned int fd, const char *buf, size_t count){
+	asm volatile (
+			"mov $" STR(NUM_WRITE) ", %rax;"
+			"syscall");
+}
+
+int sys_open(const char *fname, int flags, int mode){
+	asm volatile (
+			"mov $" STR(NUM_OPEN) ", %rax;"
+			"syscall");
+}
+
+int  sys_close(unsigned int fd){
+	asm volatile (
+			"mov $" STR(NUM_CLOSE) ", %rax;"
+			"syscall");
+}
+
+void sys_exit(int status){
+	asm volatile (
+			"mov $" STR(NUM_EXIT) ", %rax;"
+			"syscall");
 }
