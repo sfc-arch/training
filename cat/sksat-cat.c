@@ -48,7 +48,9 @@ void* memset(void *buf, int ch, size_t n);
 size_t strlen(const char *str);
 int strcmp(const char *s1, const char *s2);
 void fputs(int fd, const char *str);
+void putchar(const int c);
 void puts(const char *str);
+void puti(const int val);
 
 
 #define BUF_SIZE	256
@@ -135,7 +137,12 @@ void check_option(const char *opt){
 	if((h_num==1 && strcmp(opt, "E")==0) |
 			(h_num==2 && strcmp(opt, "show-ends")==0))
 		output_opt |= OPT_END;
-	else if((h_num==1 && strcmp(opt, "s")==0) | (h_num==2 && strcmp(opt, "--squeeze-blank")==0))
+	else if((h_num==1 && strcmp(opt, "n")==0) |
+			(h_num==2 && strcmp(opt, "number")==0))
+		//error("not implemented option.\n");
+		output_opt |= OPT_NUMBER;
+	else if((h_num==1 && strcmp(opt, "s")==0) |
+		(h_num==2 && strcmp(opt, "squeeze-blank")==0))
 		output_opt |= OPT_SQUEEZE;
 	else if((h_num==1 && strcmp(opt, "T")==0) |
 			(h_num==2 && strcmp(opt, "show-tabs")==0))
@@ -146,7 +153,8 @@ void check_option(const char *opt){
 			"Concatenate FILE(s) to standard output.\n\n"
 			"With no FILE, or when FILE is -, read standard input.\n\n"
 			"  -E, --show-ends          display $ at end of each line\n"
-			"  -s, --squeeze-blank      suppress repeated empty output lines"
+			"  -n, --number             number all output lines\n"
+			"  -s, --squeeze-blank      suppress repeated empty output lines\n"
 			"  -T, --show-tabs          display TAB characters as ^I\n"
 			"    --help     display this help and exit\n"
 			"    --version  output version information and exit\n"
@@ -192,9 +200,17 @@ void cat_loop(int fd){
 void print_with_opt(const char *buf){
 	char buf2[BUF_SIZE*2];
 	static bool before_newline = false;
+	static int line = 1;
 
 	const char *read = buf;
 	char *write = buf2;
+
+	if((output_opt & OPT_NUMBER) && line==1){
+		puts("    ");
+		puti(line++);
+		puts("  ");
+	}
+
 	for(;;){
 		if(*read == '\0'){
 			*write = '\0';
@@ -233,7 +249,20 @@ notopt:
 		write++;
 	}
 
-	puts(buf2);
+	if(output_opt & OPT_NUMBER){
+		for(;;){
+			if(*buf == '\0') break;
+			putchar(*buf);
+			if(*buf == '\n'){
+				puts("    ");
+				puti(line);
+				puts("  ");
+				line++;
+			}
+			buf++;
+		}
+	}else
+		puts(buf2);
 }
 
 void error(const char *msg){
@@ -276,8 +305,22 @@ void fputs(int fd, const char *str){
 	return;
 }
 
+void putchar(const int c){
+	sys_write(stdout, (const char*)&c, 1);
+}
+
 void puts(const char *str){
 	fputs(stdout, str);
+}
+
+void puti(const int val){
+	if(!val) return;
+	int i= 0;
+	int l = val;
+	while(l/=10) i++;
+
+	puti(val/10);
+	putchar('0'+(val%10));
 }
 
 // system call wrapper impl
