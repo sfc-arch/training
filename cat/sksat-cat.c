@@ -55,8 +55,11 @@ void puts(const char *str);
 
 char output_opt;	// do not initialize here!!!
 #define OPT_END		0b00000001
-#define OPT_NUMBER	0b00000010
-#define OPT_TAB		0b00000100
+#define OPT_NONBLANK	0b00000010
+#define OPT_NUMBER	0b00000100
+#define OPT_SQUEEZE	0b00001000
+#define OPT_TAB		0b00010000
+#define OPT_NOPRINT	0b00100000
 
 int main(int argc, char **argv);
 size_t check_cmdline(const int argc, char **argv);
@@ -132,6 +135,8 @@ void check_option(const char *opt){
 	if((h_num==1 && strcmp(opt, "E")==0) |
 			(h_num==2 && strcmp(opt, "show-ends")==0))
 		output_opt |= OPT_END;
+	else if((h_num==1 && strcmp(opt, "s")==0) | (h_num==2 && strcmp(opt, "--squeeze-blank")==0))
+		output_opt |= OPT_SQUEEZE;
 	else if((h_num==1 && strcmp(opt, "T")==0) |
 			(h_num==2 && strcmp(opt, "show-tabs")==0))
 		output_opt |= OPT_TAB;
@@ -141,6 +146,7 @@ void check_option(const char *opt){
 			"Concatenate FILE(s) to standard output.\n\n"
 			"With no FILE, or when FILE is -, read standard input.\n\n"
 			"  -E, --show-ends          display $ at end of each line\n"
+			"  -s, --squeeze-blank      suppress repeated empty output lines"
 			"  -T, --show-tabs          display TAB characters as ^I\n"
 			"    --help     display this help and exit\n"
 			"    --version  output version information and exit\n"
@@ -185,6 +191,7 @@ void cat_loop(int fd){
 
 void print_with_opt(const char *buf){
 	char buf2[BUF_SIZE*2];
+	static bool before_newline = false;
 
 	const char *read = buf;
 	char *write = buf2;
@@ -195,12 +202,17 @@ void print_with_opt(const char *buf){
 		}
 		switch(*read){
 		case '\n':
+			if(output_opt & OPT_SQUEEZE){
+				if(before_newline) continue;
+				before_newline = true;
+			}
 			if(output_opt & OPT_END){
 				*write    = '$';
 				*(write+1)= '\n';
 				write++;
-			}else
-				goto notopt;
+			}else{
+				*write = '\n';
+			}
 			break;
 		case '\t':
 			if(output_opt & OPT_TAB){
@@ -212,6 +224,7 @@ void print_with_opt(const char *buf){
 			break;
 		default:
 notopt:
+			before_newline = false;
 			*write = *read;
 			break;
 		}
