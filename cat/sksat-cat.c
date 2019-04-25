@@ -1,3 +1,5 @@
+// compile: $(CC) sksat-cat.c -o sksat-cat -nostdlib -fno-builtin -fno-stack-protector
+
 // std types
 typedef _Bool			bool;
 #define	true			1
@@ -51,10 +53,16 @@ void puts(const char *str);
 
 #define BUF_SIZE	256
 
+char output_opt;	// do not initialize here!!!
+#define OPT_END		0b00000001
+#define OPT_NUMBER	0b00000010
+#define OPT_TAB		0b00000100
+
 int main(int argc, char **argv);
-void check_cmdline(const int argc, char **argv);
+size_t check_cmdline(const int argc, char **argv);
 void check_option(const char *opt);
 void cat_loop(int fd);
+void print_with_opt(const char *buf);
 void error(const char *msg);
 
 // entry point
@@ -69,12 +77,10 @@ asm(
 int main(int argc, char **argv){
 	char buf[BUF_SIZE];
 
-	if(argc == 1){
+	if(check_cmdline(argc, argv) == 0){
 		cat_loop(stdin);
-		return 0;
+		sys_exit(0);
 	}
-
-	check_cmdline(argc, argv);
 
 	for(int n=1;n<argc;n++){
 		int fd;
@@ -95,14 +101,23 @@ int main(int argc, char **argv){
 	sys_exit(0);
 }
 
-void check_cmdline(const int argc, char **argv){
+size_t check_cmdline(const int argc, char **argv){
+	size_t fnum = 0;
+	output_opt = 0x00;
 	for(int n=1;n<argc;n++){
-		if(strlen(argv[n]) <= 1) continue;
-		if(argv[n][0] != '-') continue;
-
+		if(strlen(argv[n]) == 0) continue;
+		if(argv[n][0] != '-'){
+			fnum++;
+			continue;
+		}
+		if(argv[n][1] == '\0'){ // "-" stdin
+			fnum++;
+			continue;
+		}
 		check_option(argv[n]);
 		memset(argv[n], '\0', strlen(argv[n]));
 	}
+	return fnum;
 }
 
 void check_option(const char *opt){
@@ -113,10 +128,14 @@ void check_option(const char *opt){
 		h_num++;
 		opt++;
 	}
-	if(h_num == 2 && strcmp(opt, "help") == 0){
+
+	if((h_num==1 && strcmp(opt, "T")==0) | (h_num==2 && strcmp(opt, "show-tabs")==0)){
+		output_opt |= OPT_TAB;
+	}else if(h_num == 2 && strcmp(opt, "help") == 0){
 		flg_exit = true;
 		puts("Usage: ./sksat-cat [OPTION]... [FILE]...\n"
 			"Concatenate FILE(s) to standard output.\n"
+			"  -T, --show-tabs          display TAB characters as ^I\n"
 			"    --help     display this help and exit\n"
 			"    --version  output version information and exit\n"
 			"Examples:\n"
@@ -151,8 +170,41 @@ void cat_loop(int fd){
 		memset(buf, '\0', BUF_SIZE);
 		if(sys_read(fd, buf, BUF_SIZE-1) == 0)
 			break;
-		puts(buf);
+		if(output_opt != 0x00)
+			print_with_opt(buf);
+		else
+			puts(buf);
 	}
+}
+
+void print_with_opt(const char *buf){
+	char buf2[BUF_SIZE*2];
+
+	const char *read = buf;
+	char *write = buf2;
+	for(;;){
+		if(*read == '\0'){
+			*write = '\0';
+			break;
+		}
+		switch(*read){
+		case '\t':
+			if(output_opt & OPT_TAB){
+				*write  = '^';
+				*(write+1)= 'I';
+				write++;
+			}
+			break;
+		default:
+			*write = *read;
+			break;
+		}
+
+		read++;
+		write++;
+	}
+
+	puts(buf2);
 }
 
 void error(const char *msg){
