@@ -1,4 +1,7 @@
 // std types
+typedef _Bool			bool;
+#define	true			1
+#define false			0
 // 64bit
 #define __SIZE_TYPE__		long unsigned int
 typedef long			__kernel_ssize_t;
@@ -41,6 +44,7 @@ void sys_exit(int status);
 // funcs
 void* memset(void *buf, int ch, size_t n);
 size_t strlen(const char *str);
+int strcmp(const char *s1, const char *s2);
 void fputs(int fd, const char *str);
 void puts(const char *str);
 
@@ -48,7 +52,8 @@ void puts(const char *str);
 #define BUF_SIZE	256
 
 int main(int argc, char **argv);
-void check_cmdline(int argc, char **argv);
+void check_cmdline(const int argc, char **argv);
+void check_option(const char *opt);
 void cat_loop(int fd);
 void error(const char *msg);
 
@@ -90,15 +95,53 @@ int main(int argc, char **argv){
 	sys_exit(0);
 }
 
-void check_cmdline(int argc, char **argv){
+void check_cmdline(const int argc, char **argv){
 	for(int n=1;n<argc;n++){
 		if(strlen(argv[n]) <= 1) continue;
 		if(argv[n][0] != '-') continue;
-		puts("cmdline option found!\t");
-		puts(argv[n]);
-		puts("\n");
+
+		check_option(argv[n]);
 		memset(argv[n], '\0', strlen(argv[n]));
 	}
+}
+
+void check_option(const char *opt){
+	bool flg_exit = false;
+	size_t h_num = 1;
+	opt++;
+	if(*opt == '-'){ // --***
+		h_num++;
+		opt++;
+	}
+	if(h_num == 2 && strcmp(opt, "help") == 0){
+		flg_exit = true;
+		puts("Usage: ./sksat-cat [OPTION]... [FILE]...\n"
+			"Concatenate FILE(s) to standard output.\n"
+			"    --help     display this help and exit\n"
+			"    --version  output version information and exit\n"
+			"Examples:\n"
+			"  ./sksat-cat f - g  Output f's contents, then standard input, then g's contents.\n"
+			"  ./sksat-cat        Copy standard input to standard output.\n"
+			"\n");
+	}else if(h_num == 2 && strcmp(opt, "version") == 0){
+		flg_exit = true;
+		puts("sksat-cat 0.1\n"
+			"Copyright (C) 2019 sksat\n"
+			"License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.\n"
+			"This is free software: you are free to change and redistribute it.\n"
+			"There is NO WARRANTY, to the extent permitted by law.\n\n"
+			"Written by sksat <sksat@sfc.wide.ad.jp>\n");
+	}else{
+		flg_exit = true;
+		puts("sksat-cat: unrecognized option '");
+			for(int i=0;i<h_num;i++) puts("-");
+			puts(opt);
+			puts("\'\n");
+		puts("Try \'sksat-cat --help\' for more information.\n");
+	}
+
+	if(flg_exit)
+		sys_exit(0);
 }
 
 void cat_loop(int fd){
@@ -134,6 +177,17 @@ size_t strlen(const char *str){
 			break;
 	}
 	return len;
+}
+
+int strcmp(const char *s1, const char *s2){
+	size_t l1, l2, len;
+	l1 = strlen(s1);
+	l2 = strlen(s2);
+	len = (l1<l2 ? l1 : l2);
+	for(int n=0;n<len;n++){
+		if(s1[n] != s2[n]) return 1;
+	}
+	return 0;
 }
 
 void fputs(int fd, const char *str){
