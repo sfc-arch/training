@@ -199,16 +199,19 @@ void print_with_opt(const char *buf){
 				*write    = '$';
 				*(write+1)= '\n';
 				write++;
-			}
+			}else
+				goto notopt;
 			break;
 		case '\t':
 			if(output_opt & OPT_TAB){
 				*write  = '^';
 				*(write+1)= 'I';
 				write++;
-			}
+			}else
+				goto notopt;
 			break;
 		default:
+notopt:
 			*write = *read;
 			break;
 		}
