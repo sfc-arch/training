@@ -48,6 +48,7 @@ void puts(const char *str);
 #define BUF_SIZE	256
 
 int main(int argc, char **argv);
+void check_cmdline(int argc, char **argv);
 void cat_loop(int fd);
 void error(const char *msg);
 
@@ -68,15 +69,36 @@ int main(int argc, char **argv){
 		return 0;
 	}
 
+	check_cmdline(argc, argv);
+
 	for(int n=1;n<argc;n++){
-		int fd = sys_open(argv[n], O_RDONLY, 0);
-		if(fd == -1)
+		int fd;
+		size_t len = strlen(argv[n]);
+
+		if(len == 0) continue;
+
+		if(argv[n][0] == '-' && len  == 1)
+			fd = stdin;
+		else
+			fd = sys_open(argv[n], O_RDONLY, 0);
+		if(fd < 0)
 			error("cannot open file.\n");
 		cat_loop(fd);
 		sys_close(fd);
 	}
 
 	sys_exit(0);
+}
+
+void check_cmdline(int argc, char **argv){
+	for(int n=1;n<argc;n++){
+		if(strlen(argv[n]) <= 1) continue;
+		if(argv[n][0] != '-') continue;
+		puts("cmdline option found!\t");
+		puts(argv[n]);
+		puts("\n");
+		memset(argv[n], '\0', strlen(argv[n]));
+	}
 }
 
 void cat_loop(int fd){
