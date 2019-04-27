@@ -1,5 +1,7 @@
 // compile: $(CC) sksat-cat.c -o sksat-cat -nostdlib -fno-builtin -fno-stack-protector
 
+#define NULL			0x00
+
 // std types
 typedef _Bool			bool;
 #define	true			1
@@ -50,6 +52,7 @@ int strcmp(const char *s1, const char *s2);
 void fputs(int fd, const char *str);
 void putchar(const int c);
 void puts(const char *str);
+char* puts_printing(const char *str);
 void puti(const int val);
 
 
@@ -68,6 +71,7 @@ size_t check_cmdline(const int argc, char **argv);
 void check_option(const char *opt);
 void cat_loop(int fd);
 void print_with_opt(const char *buf);
+void print_newline();
 void error(const char *msg);
 
 // entry point
@@ -198,71 +202,59 @@ void cat_loop(int fd){
 }
 
 void print_with_opt(const char *buf){
-	char buf2[BUF_SIZE*2];
-	static bool before_newline = false;
-	static int line = 1;
+	char *s = (char*)buf;
 
-	const char *read = buf;
-	char *write = buf2;
-
-	if((output_opt & OPT_NUMBER) && line==1)
-		puts("    1  ");
+	print_newline();
 
 	for(;;){
-		if(*read == '\0'){
-			*write = '\0';
+		s = puts_printing(s);
+		if(*s == '\0')
 			break;
-		}
-		switch(*read){
+
+		// non printing
+		switch(*s){
 		case '\n':
 			if(output_opt & OPT_SQUEEZE){
-				if(before_newline) continue;
-				before_newline = true;
+				char *tmp = s+1;
+				for(;;){
+					if(*tmp!='\n') break;
+					tmp++;
+				}
+
+				if((tmp-s) > 1)
+					print_newline();
+				s = tmp-1;
 			}
-			if(output_opt & OPT_END){
-				*write    = '$';
-				*(write+1)= '\n';
-				write++;
-			}else{
-				*write = '\n';
-			}
+			print_newline();
 			break;
 		case '\t':
-			if(output_opt & OPT_TAB){
-				*write  = '^';
-				*(write+1)= 'I';
-				write++;
-			}else
-				goto notopt;
-			break;
-		default:
-notopt:
-			before_newline = false;
-			*write = *read;
+			if(output_opt & OPT_TAB)
+				puts("^I");
+			else
+				putchar('\t');
 			break;
 		}
-
-		read++;
-		write++;
+		s++;
 	}
+}
+
+void print_newline(){
+	static int line = 1;
+	char *newline_str = "\n";
+
+	if(output_opt & OPT_END)
+		newline_str = "$\n";
+
+	if(line != 1)
+		puts(newline_str);
 
 	if(output_opt & OPT_NUMBER){
-		if(line == 1) line++;
-		else{
-			for(;;){
-				if(*buf == '\0') break;
-				putchar(*buf);
-				if(*buf == '\n'){
-					puts("    ");
-					puti(line);
-					puts("  ");
-					line++;
-				}
-				buf++;
-			}
-		}
-	}else
-		puts(buf2);
+		puts("    ");
+		puti(line);
+		puts("  ");
+	}
+
+	line++;
 }
 
 void error(const char *msg){
@@ -311,6 +303,18 @@ void putchar(const int c){
 
 void puts(const char *str){
 	fputs(stdout, str);
+}
+
+char* puts_printing(const char *str){
+	size_t n=0;
+
+	for(;;n++){
+		const char c = str[n];
+		if(c == '\0' || c == '\n' || c == '\t') break;
+	}
+
+	sys_write(stdout, str, n);
+	return (char*)str+n;
 }
 
 void puti(const int val){
