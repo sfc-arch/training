@@ -190,6 +190,9 @@ void check_option(const char *opt){
 void cat_loop(int fd){
 	char buf[BUF_SIZE];
 
+	if(output_opt != 0x00)
+		print_newline();
+
 	for(;;){
 		memset(buf, '\0', BUF_SIZE);
 		if(sys_read(fd, buf, BUF_SIZE-1) == 0)
@@ -202,14 +205,20 @@ void cat_loop(int fd){
 }
 
 void print_with_opt(const char *buf){
+	static bool last_newline = false;
 	char *s = (char*)buf;
 
-	print_newline();
+	if(last_newline){
+		print_newline();
+		last_newline = true;
+	}
 
 	for(;;){
 		s = puts_printing(s);
-		if(*s == '\0')
+		if(*s == '\0'){
+			if(*(s-1) == '\n') last_newline = true;
 			break;
+		}
 
 		// non printing
 		switch(*s){
