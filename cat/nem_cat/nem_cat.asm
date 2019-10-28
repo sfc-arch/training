@@ -3,6 +3,15 @@ section .data
 	length equ $- cant
 	errnum equ 0xFFFFFFFE
 
+	sys_open equ 2
+	sys_write equ 1
+	sys_read equ 0
+	sys_close equ 3
+	sys_lseek equ 8
+
+	seek_start equ 0
+	seek_end equ 2
+
 section .bss
 	msg resb 1
 
@@ -10,60 +19,63 @@ section .text
 	global _start
 
 _write:
-	mov rax, 1
-	mov rdi, 1
+	mov rax, sys_write
+	mov rdi, 1 ;標準出力
 	syscall
 	ret
 
 _start:
-	pop rcx
-	pop rbx
+	pop rcx ;コマンドライン引数の数
+	pop rbx ;./n_cat
 	push rcx
 
 argloop:
-	open:
 	pop rcx
-	pop rbx
+	pop rbx ;コマンドライン引数
 	dec rcx
 	push rcx
 	cmp rcx, 0
 	je end
 
 	;open
-	mov rax, 2
+	mov rax, sys_open
 	mov rdi, rbx
-	mov rsi, 0
-	mov rdx, 0
+	xor rsi, rsi
+	xor rdx, rdx
 	syscall
 
+	;これ以降rdiに変更なし
+	push rax
 	cmp rax, errnum
 	je op_error
 
+	;lseek
+	mov rax, sys_lseek
+	pop rdi
+	xor rsi, rsi
+	mov rdx, seek_end
+	syscall
+
 	push rax
 
-	wrloop:
-		;read
-		mov rax, 0
-		pop rdi
-		mov rsi, msg
-		mov rdx, 1
-		syscall
-		
-		cmp rax, 0
-		je close
-
-		push rdi
-		;write
-		mov rsi, msg
-		mov rdx, 1
-		call _write
-	jmp wrloop
+	mov rax, sys_lseek
+	xor rsi, rsi
+	mov rdx, seek_start
+	syscall
+	
+	;read
+	mov rax, sys_read
+	mov rsi, msg ;書き込み先
+	pop rdx ;読み込む文字数
+	syscall
+	
+	;write
+	mov rsi, msg ;読み込み先
+	call _write
 
 	close:
-	mov rax, 3
-	mov rdi, 0
-	mov rsi, 0
-	mov rdx, 0
+	mov rax, sys_close
+	xor rdi, rdi
 	syscall
 jmp argloop
 
@@ -75,5 +87,5 @@ op_error:
 end:
 	;exit
 	mov rax, 60
-	mov rdi, 0
+	xor rdi, rdi
 	syscall
